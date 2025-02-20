@@ -15,6 +15,7 @@ import {
 } from "./components/ui/dialog";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
+import { ThinkingBlock } from "./components/thinking";
 
 function App() {
   const [threadId, setThreadId] = useQueryState("threadId");
@@ -91,6 +92,27 @@ function App() {
             </div>
           )}
 
+          {state.history.length > 0 && (
+            <ThinkingBlock>
+              {state.history.map((h) => (
+                <div key={h.checkpoint.checkpoint_id} className="empty:hidden">
+                  {h.tasks
+                    .filter((t) => t.name !== "__start__")
+                    .map((t) => (
+                      <div key={t.id}>
+                        <span className="inline-flex rounded-lg border px-2 py-1 text-sm text-muted-foreground">
+                          {t.name}
+                        </span>
+                        <pre className="text-sm">
+                          {JSON.stringify(t.result, null, 2)}
+                        </pre>
+                      </div>
+                    ))}
+                </div>
+              ))}
+            </ThinkingBlock>
+          )}
+
           {state.values.final_report && (
             <div className="prose break-words">
               <Markdown remarkPlugins={[remarkGfm]}>
@@ -106,7 +128,7 @@ function App() {
           ) : null}
 
           {state.interrupt ? (
-            <div className="flex flex-col gap-4 rounded-2xl border p-4">
+            <div className="flex max-w-[65ch] flex-col gap-4 rounded-2xl border p-4">
               <p className="font-semibold uppercase text-muted-foreground">
                 Interrupted
               </p>
