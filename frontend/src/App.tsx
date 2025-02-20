@@ -193,7 +193,7 @@ function App() {
 
       <div className="sticky bottom-0 p-4">
         <form
-          className="flex flex-col gap-3 rounded-xl border border-input bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
+          className="mx-auto flex max-w-[calc(65ch+32px)] flex-col gap-3 rounded-xl border border-input bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
           onSubmit={(e) => {
             e.preventDefault();
             const form = e.target as HTMLFormElement;
