@@ -92,7 +92,7 @@ function App() {
           )}
 
           {state.values.final_report && (
-            <div className="prose">
+            <div className="prose break-words">
               <Markdown remarkPlugins={[remarkGfm]}>
                 {state.values.final_report}
               </Markdown>
