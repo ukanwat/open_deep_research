@@ -3,7 +3,18 @@ import { Button } from "./components/ui/button";
 import { useQueryState } from "nuqs";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { PlusIcon, MessageCircle, LoaderCircle } from "lucide-react";
+import { PlusIcon, MessageCircle, LoaderCircle, ThumbsUp } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./components/ui/dialog";
+import { Input } from "./components/ui/input";
+import { Label } from "./components/ui/label";
 
 function App() {
   const [threadId, setThreadId] = useQueryState("threadId");
@@ -56,15 +67,18 @@ function App() {
               {state.isLoading ? (
                 <>
                   <LoaderCircle className="h-4 w-4 animate-spin" />
-                  <span>
-                    <span className="text-muted-foreground">
-                      Researching topic:{" "}
-                    </span>
-                    {state.values.topic}
+                  <span className="text-muted-foreground">
+                    Researching topic:{" "}
                   </span>
+                  {state.values.topic}
                 </>
               ) : (
-                <span>Research for topic: {state.values.topic}</span>
+                <>
+                  <span className="text-muted-foreground">
+                    Research for topic:{" "}
+                  </span>
+                  {state.values.topic}
+                </>
               )}
             </div>
           ) : (
@@ -100,14 +114,56 @@ function App() {
                 {state.interrupt.value}
               </div>
 
-              <Button
-                className="w-full"
-                onClick={() =>
-                  state.submit(undefined, { command: { resume: true } })
-                }
-              >
-                Resume
-              </Button>
+              <div className="grid grid-cols-2 gap-4">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <MessageCircle className="size-4" />
+                      Give feedback
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Give feedback</DialogTitle>
+                      <DialogDescription>
+                        Provide a short feedback about the research plan.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form
+                      className="flex flex-col gap-4"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const form = e.target as HTMLFormElement;
+                        const formData = new FormData(form);
+                        const feedback = formData.get("feedback") as string;
+                        form.reset();
+
+                        state.submit(undefined, {
+                          command: { resume: feedback },
+                        });
+                      }}
+                    >
+                      <div className="grid gap-2">
+                        <Label htmlFor="feedback">Feedback</Label>
+                        <Input id="feedback" name="feedback" />
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Submit feedback</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+
+                <Button
+                  className="w-full"
+                  onClick={() =>
+                    state.submit(undefined, { command: { resume: true } })
+                  }
+                >
+                  <ThumbsUp className="size-4" />
+                  Approve
+                </Button>
+              </div>
             </div>
           ) : null}
         </div>
@@ -115,7 +171,7 @@ function App() {
 
       <div className="sticky bottom-0 p-4">
         <form
-          className="flex flex-col gap-3 rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
+          className="flex flex-col gap-3 rounded-xl border border-input bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
           onSubmit={(e) => {
             e.preventDefault();
             const form = e.target as HTMLFormElement;
@@ -139,9 +195,7 @@ function App() {
                 Stop
               </Button>
             ) : (
-              <Button type="submit">
-                {state.isLoading ? "Loading..." : "Submit"}
-              </Button>
+              <Button type="submit">Research</Button>
             )}
           </div>
         </form>
